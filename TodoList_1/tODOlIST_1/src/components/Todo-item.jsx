@@ -2,7 +2,24 @@ import "./todo.css";
 import { useState } from "react";
 import TodoListItem from "./TodoList";
 
+import { useEffect } from "react";
+
+
 function TodoItem() {
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/todos?_limit=7") 
+      .then((response) => response.json())
+      //.then(json => console.log(json))
+      .then((data) => {
+        const titles = data.map((todo) => todo.title);
+        setTodolist(titles);
+      })
+      .catch((error) => console.error("Error fetching todos:", error));
+  }, []);
+
+
+
   let [todolist,setTodolist] = useState([]);
     let saveData = (evevt) =>{
       let toname = event.target.toname.value;
