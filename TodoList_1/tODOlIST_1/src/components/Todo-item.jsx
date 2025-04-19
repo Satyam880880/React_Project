@@ -1,67 +1,62 @@
-import "./todo.css";
-import { useState } from "react";
-import TodoListItem from "./TodoList";
-
-import { useEffect } from "react";
-
+import React, { useEffect, useState } from 'react';
+import TodoListItem from './TodoList';
+import { getTodos, addTodo } from './Todo_Api';
+import './todo.css';
 
 function TodoItem() {
+  const [todolist, setTodolist] = useState([]);
 
   useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/todos?_limit=7") 
-      .then((response) => response.json())
-      //.then(json => console.log(json))
+    getTodos()
       .then((data) => {
         const titles = data.map((todo) => todo.title);
         setTodolist(titles);
       })
-      .catch((error) => console.error("Error fetching todos:", error));
+      .catch((error) => console.error('Error fetching todos:', error));
   }, []);
 
+  const saveData = (event) => {
+    event.preventDefault();
+    const toname = event.target.toname.value.trim();
 
+    if (!toname) return;
 
-  let [todolist,setTodolist] = useState([]);
-    let saveData = (evevt) =>{
-      let toname = event.target.toname.value;
-     // alert(toname);
-  
-     if(!todolist.includes(toname)){
-      let finalTodolist = [...todolist,toname];
-      setTodolist(finalTodolist);
-     }else{
-      alert("Task already exists");
-     }
-      evevt.preventDefault();
-     
+    if (!todolist.includes(toname)) {
+      addTodo(toname)
+        .then((newTodo) => {
+          setTodolist([...todolist, newTodo.title]);
+          event.target.reset(); // clear input
+        })
+        .catch((error) => console.error('Error adding todo:', error));
+    } else {
+      alert('Task already exists');
     }
-  
-    let list = todolist.map((value,index)=>{
-      return (
-        <TodoListItem value={value} key={index}  indexNumber={index} 
-        todolist={todolist} setTodolist={setTodolist}
-        />
-  
-      )
-    })
-  
-    return (
-    <div className='App'>
-       <h1>TodoList</h1>
-        
-          <form onSubmit={saveData}>
-            <input type="text" name='toname'/>
-            <button>Add Task</button>
-          </form>
-  
-          <div className='outerDiv'>
-  
-            <ul>
-             
-            {list}
-            </ul>
-          </div>
+  };
+
+  return (
+    <div className="App">
+      <h1>Todo List</h1>
+
+      <form onSubmit={saveData}>
+        <input type="text" name="toname" placeholder="Enter a task..." />
+        <button>Add Task</button>
+      </form>
+
+      <div className="outerDiv">
+        <ul>
+          {todolist.map((value, index) => (
+            <TodoListItem
+              key={index}
+              value={value}
+              indexNumber={index}
+              todolist={todolist}
+              setTodolist={setTodolist}
+            />
+          ))}
+        </ul>
+      </div>
     </div>
-    );
-  }
-  
+  );
+}
+
 export default TodoItem;

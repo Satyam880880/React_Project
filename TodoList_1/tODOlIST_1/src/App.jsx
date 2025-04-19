@@ -1,11 +1,12 @@
-
+import React from 'react';
 import TodoItem from './components/Todo-item';
 
 function App() {
- return(
-<TodoItem />
- )
+  return (
+    <div className="App">
+      <TodoItem />
+    </div>
+  );
 }
+
 export default App;
-
-
